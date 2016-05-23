@@ -86,6 +86,7 @@ prompt_pure_check_git_arrows() {
 
 # NVM
 # Show current version of node, exception system.
+# Adapted from https://github.com/denysdovhan/spaceship-zsh-theme
 prompt_pure_check_nvm_status() {
 	[[ $PURE_NVM_SHOW == false ]] && return
 
