@@ -348,6 +348,7 @@ prompt_pure_setup() {
 	autoload -Uz add-zsh-hook
 	autoload -Uz vcs_info
 	autoload -Uz async && async
+	autoload -U colors && colors # for more advanced color abilities
 
 	add-zsh-hook precmd prompt_pure_precmd
 	add-zsh-hook preexec prompt_pure_preexec
@@ -375,7 +376,7 @@ prompt_pure_setup() {
 	[[ $UID -eq 0 ]] && prompt_pure_username=' %F{white}%n%f%F{242}@%m%f'
 
 	# prompt turns red if the previous command didn't exit with 0
-	PROMPT="%(?.%F{magenta}.%F{red})${PURE_PROMPT_SYMBOL:-❯}%f "
+	PROMPT="%(?.%{$fg_bold[green]%}.%{$fg_bold[red]%})${PURE_PROMPT_SYMBOL}%f "
 }
 
 prompt_pure_setup "$@"
