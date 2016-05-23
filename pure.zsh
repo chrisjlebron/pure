@@ -84,6 +84,28 @@ prompt_pure_check_git_arrows() {
 	[[ -n $arrows ]] && prompt_pure_git_arrows=" ${arrows}"
 }
 
+# NVM
+# Show current version of node, exception system.
+prompt_pure_check_nvm_status() {
+	[[ $PURE_NVM_SHOW == false ]] && return
+
+	$(type nvm >/dev/null 2>&1) || return
+
+	# reset nvm status prompt
+	prompt_pure_nvm_status=
+
+	local nvm_status=$(nvm current 2>/dev/null)
+	[[ "${nvm_status}" == "system" ]] && return
+	nvm_status=${nvm_status}
+
+	local nvm_prompt
+	nvm_prompt+="%{$fg_bold[green]%}"
+	nvm_prompt+="${PURE_NVM_SYMBOL:-⬢} ${nvm_status}"
+	nvm_prompt+="%{$reset_color%}"
+
+	[[ -n $nvm_prompt ]] && prompt_pure_nvm_status=" ${nvm_prompt}"
+}
+
 prompt_pure_set_title() {
 	# emacs terminal does not support settings the title
 	(( ${+EMACS} )) && return
@@ -136,6 +158,8 @@ prompt_pure_preprompt_render() {
 	preprompt+="%F{$git_color}${vcs_info_msg_0_}${prompt_pure_git_dirty}%f"
 	# git pull/push arrows
 	preprompt+="%F{cyan}${prompt_pure_git_arrows}%f"
+	# nvm status (current node version)
+	preprompt+="${prompt_pure_nvm_status}"
 	# username and machine if applicable
 	preprompt+=$prompt_pure_username
 	# execution time
@@ -204,6 +228,9 @@ prompt_pure_precmd() {
 
 	# check for git arrows
 	prompt_pure_check_git_arrows
+
+	# check nvm status
+	prompt_pure_check_nvm_status
 
 	# shows the full path in the title
 	prompt_pure_set_title 'expand-prompt' '%~'
