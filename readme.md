@@ -45,11 +45,14 @@ That's it. Skip to [Getting started](#getting-started).
 
 3. Symlink `async.zsh` in `$fpath` with the name `async`.
 
+4. Symlink `git_prompt.zsh` in `$fpath` with the name `git_prompt`.
+
 #### Example
 
 ```console
 $ ln -s "$PWD/pure.zsh" /usr/local/share/zsh/site-functions/prompt_pure_setup
 $ ln -s "$PWD/async.zsh" /usr/local/share/zsh/site-functions/async
+$ ln -s "$PWD/git_prompt.zsh" /usr/local/share/zsh/site-functions/git_prompt
 ```
 *Run `echo $fpath` to see possible locations.*
 
@@ -65,6 +68,7 @@ Then install the theme there:
 ```console
 $ ln -s "$PWD/pure.zsh" "$HOME/.zfunctions/prompt_pure_setup"
 $ ln -s "$PWD/async.zsh" "$HOME/.zfunctions/async"
+$ ln -s "$PWD/git_prompt.zsh" "$HOME/.zfunctions/git_prompt"
 ```
 
 
@@ -146,20 +150,22 @@ Set `zstyle ':prezto:module:prompt' theme 'pure'` in `~/.zpreztorc`.
 
 ### [antigen](https://github.com/zsh-users/antigen)
 
-Update your `.zshrc` file with the following two lines (order matters). Do not use the `antigen theme` function.
+Update your `.zshrc` file with the following three lines (order matters). Do not use the `antigen theme` function.
 
 ```console
 $ antigen bundle mafredri/zsh-async
-$ antigen bundle sindresorhus/pure
+$ antigen bundle chrisjlebron/pure git_prompt
+$ antigen bundle chrisjlebron/pure
 ```
 
 ### [antibody](https://github.com/getantibody/antibody)
 
-Update your `.zshrc` file with the following two lines (order matters):
+Update your `.zshrc` file with the following three lines (order matters):
 
 ```console
 $ antibody bundle mafredri/zsh-async
-$ antibody bundle sindresorhus/pure
+$ antigen bundle chrisjlebron/pure git_prompt
+$ antibody bundle chrisjlebron/pure
 ```
 
 ## FAQ
