@@ -34,18 +34,17 @@ parse_git_state() {
 
   # If combining with Pure, their config for some bits, which is more explicit
   # about merge/rebase/cherry-pick, and less about number of commits ahead/behind
-  if [[ !${USE_PURE_GIT_PROMPT:-false} ]]; then
-
+  if [[ "${USE_PURE_GIT_PROMPT:-false}" != true ]]; then
     local NUM_AHEAD="$(echo "$GIT_STATUS" | head -1 |
       grep 'ahead [0-9]*' | sed -e 's/.*ahead \([0-9]*\).*/\1/')"
     if [[ $NUM_AHEAD -gt 0 ]]; then
-      GIT_STATE=$GIT_STATE${GIT_PROMPT_AHEAD//NUM/$NUM_AHEAD}
+      GIT_STATE=$GIT_STATE${GIT_PROMPT_AHEAD//ANUM/$NUM_AHEAD}
     fi
 
     local NUM_BEHIND="$(echo "$GIT_STATUS" | head -1 |
       grep 'behind [0-9]*' | sed -e 's/.*behind \([0-9]*\).*/\1/')"
     if [[ $NUM_BEHIND -gt 0 ]]; then
-      GIT_STATE=$GIT_STATE${GIT_PROMPT_BEHIND//NUM/$NUM_BEHIND}
+      GIT_STATE=$GIT_STATE${GIT_PROMPT_BEHIND//BNUM/$NUM_BEHIND}
     fi
 
     local GIT_DIR="$(git rev-parse --git-dir 2> /dev/null)"
