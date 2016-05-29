@@ -84,6 +84,29 @@ prompt_pure_check_git_arrows() {
 	[[ -n $arrows ]] && prompt_pure_git_arrows=" ${arrows}"
 }
 
+# NVM
+# Show current version of node, exception system.
+# Adapted from https://github.com/denysdovhan/spaceship-zsh-theme
+prompt_pure_check_nvm_status() {
+	[[ $PURE_NVM_SHOW == false ]] && return
+
+	$(type nvm >/dev/null 2>&1) || return
+
+	# reset nvm status prompt
+	prompt_pure_nvm_status=
+
+	local nvm_status=$(nvm current 2>/dev/null)
+	[[ "${nvm_status}" == "system" ]] && return
+	nvm_status=${nvm_status}
+
+	local nvm_prompt
+	nvm_prompt+="%{$fg_bold[green]%}"
+	nvm_prompt+="${PURE_NVM_SYMBOL:-⬢} ${nvm_status}"
+	nvm_prompt+="%{$reset_color%}%b"
+
+	[[ -n $nvm_prompt ]] && prompt_pure_nvm_status=" ${nvm_prompt}"
+}
+
 prompt_pure_set_title() {
 	# emacs terminal does not support settings the title
 	(( ${+EMACS} )) && return
@@ -131,11 +154,13 @@ prompt_pure_preprompt_render() {
 	[[ -n ${prompt_pure_git_last_dirty_check_timestamp+x} ]] && git_color=red
 
 	# construct preprompt, beginning with path
-	local preprompt="%F{blue}%~%f"
+	local preprompt="%{$fg_bold[cyan]%}%~%f"
 	# git info
 	preprompt+="%F{$git_color}${vcs_info_msg_0_}${prompt_pure_git_dirty}%f"
 	# git pull/push arrows
 	preprompt+="%F{cyan}${prompt_pure_git_arrows}%f"
+	# nvm status (current node version)
+	preprompt+="${prompt_pure_nvm_status}"
 	# username and machine if applicable
 	preprompt+=$prompt_pure_username
 	# execution time
@@ -205,6 +230,9 @@ prompt_pure_precmd() {
 	# check for git arrows
 	prompt_pure_check_git_arrows
 
+	# check nvm status
+	prompt_pure_check_nvm_status
+
 	# shows the full path in the title
 	prompt_pure_set_title 'expand-prompt' '%~'
 
@@ -234,7 +262,8 @@ prompt_pure_async_git_dirty() {
 		test -z "$(command git status --porcelain --ignore-submodules -unormal)"
 	fi
 
-	(( $? )) && echo "*"
+	# @NOTE: there's a space before to separate status from branchname
+	(( $? )) && echo " $(parse_git_state)"
 }
 
 prompt_pure_async_git_fetch() {
@@ -321,6 +350,9 @@ prompt_pure_setup() {
 	autoload -Uz add-zsh-hook
 	autoload -Uz vcs_info
 	autoload -Uz async && async
+	autoload -U colors && colors # for more advanced color abilities
+
+	autoload -Uz git_prompt && git_prompt
 
 	add-zsh-hook precmd prompt_pure_precmd
 	add-zsh-hook preexec prompt_pure_preexec
@@ -348,7 +380,7 @@ prompt_pure_setup() {
 	[[ $UID -eq 0 ]] && prompt_pure_username=' %F{white}%n%f%F{242}@%m%f'
 
 	# prompt turns red if the previous command didn't exit with 0
-	PROMPT="%(?.%F{magenta}.%F{red})${PURE_PROMPT_SYMBOL:-❯}%f "
+	PROMPT="%(?.%{$fg_bold[green]%}.%{$fg_bold[red]%})${PURE_PROMPT_SYMBOL}%f%b "
 }
 
 prompt_pure_setup "$@"

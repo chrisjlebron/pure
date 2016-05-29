@@ -6,10 +6,10 @@ pkgver=r61.7d3b317
 pkgrel=1
 pkgdesc='A minimal and pure prompt for zsh.'
 arch=('any')
-url='https://github.com/sindresorhus/pure'
+url='https://github.com/chrisjlebron/pure'
 license=('MIT')
 depends=('zsh' 'git')
-source=("$pkgname::git://github.com/sindresorhus/pure.git")
+source=("$pkgname::git://github.com/chrisjlebron/pure.git")
 sha256sums=('SKIP')
 
 pkgver() {
@@ -23,4 +23,6 @@ package() {
     "$pkgdir/usr/share/zsh/functions/Prompts/prompt_pure_setup"
   install -Dm644 async.zsh \
     "$pkgdir/usr/share/zsh/functions/async"
+  install -Dm644 git_prompt.zsh \
+    "$pkgdir/usr/share/zsh/functions/git_prompt"
 }
