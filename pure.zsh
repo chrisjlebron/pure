@@ -262,7 +262,8 @@ prompt_pure_async_git_dirty() {
 		test -z "$(command git status --porcelain --ignore-submodules -unormal)"
 	fi
 
-	(( $? )) && echo "*"
+	# @NOTE: there's a space before to separate status from branchname
+	(( $? )) && echo " $(parse_git_state)"
 }
 
 prompt_pure_async_git_fetch() {
@@ -350,6 +351,8 @@ prompt_pure_setup() {
 	autoload -Uz vcs_info
 	autoload -Uz async && async
 	autoload -U colors && colors # for more advanced color abilities
+
+	autoload -Uz git_prompt && git_prompt
 
 	add-zsh-hook precmd prompt_pure_precmd
 	add-zsh-hook preexec prompt_pure_preexec
