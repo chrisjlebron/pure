@@ -96,8 +96,10 @@ prompt_pure_check_nvm_status() {
 	prompt_pure_nvm_status=
 
 	local nvm_status=$(nvm current 2>/dev/null)
-	[[ "${nvm_status}" == "system" ]] && return
-	nvm_status=${nvm_status}
+	if [[ "${nvm_status}" == "system" ]]; then
+		local system_node_version=$(node -v 2>/dev/null)
+		nvm_status="${system_node_version} (system)"
+	fi
 
 	local nvm_prompt
 	nvm_prompt+="%{$fg_bold[green]%}"
@@ -119,12 +121,16 @@ prompt_pure_check_pyenv_status() {
 	prompt_pure_pyenv_status=
 
 	local pyenv_status=$(pyenv version-name 2>/dev/null)
-	[[ "${pyenv_status}" == "system" ]] && return
-	pyenv_status=${pyenv_status}
+	if [[ "${pyenv_status}" == "system" ]]; then
+		# python prints the version prefixed by "Python" (e.g. Python 3.7.2);
+		# this pipes that to `cut`, which sets " " as the delimiter,
+		# then selects the second field (the version number only)
+		local system_python_version=$(python -V 2>&1 | cut -d " " -f2)
+		pyenv_status="${system_python_version} (system)"
+	fi
 
 	local pyenv_prompt
 	pyenv_prompt+="%B%F{025}"
-	# pyenv_prompt+="%{$fg_bold[blue]%}"
 	pyenv_prompt+="${PURE_PYENV_SYMBOL:-ƤƳ} ${pyenv_status}"
 	pyenv_prompt+="%f%b"
 
@@ -143,8 +149,14 @@ prompt_pure_check_jenv_status() {
 	prompt_pure_jenv_status=
 
 	local jenv_status=$(jenv version-name 2>/dev/null)
-	[[ "${jenv_status}" == "system" ]] && return
-	jenv_status=${jenv_status}
+	if [[ "${jenv_status}" == "system" ]]; then
+		# java prints the version number surrounded by "" and in a line-broken paragraph of info;
+		# this pipes that to `awk`, which sets " as the delimiter,
+		# then selects the line containing the word "version",
+		# then selects the second field from that line (the version number only)
+		local system_java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+		jenv_status="${system_java_version} (system)"
+	fi
 
 	local jenv_prompt
 	jenv_prompt+="%{$fg_bold[red]%}"
