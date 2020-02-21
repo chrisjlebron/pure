@@ -107,6 +107,53 @@ prompt_pure_check_nvm_status() {
 	[[ -n $nvm_prompt ]] && prompt_pure_nvm_status=" ${nvm_prompt}"
 }
 
+# PYENV
+# Show current version of python, exception system.
+# Adapted from nvm status check above
+prompt_pure_check_pyenv_status() {
+	[[ $PURE_PYENV_SHOW == false ]] && return
+
+	$(type pyenv >/dev/null 2>&1) || return
+
+	# reset pyenv status prompt
+	prompt_pure_pyenv_status=
+
+	local pyenv_status=$(pyenv version-name 2>/dev/null)
+	[[ "${pyenv_status}" == "system" ]] && return
+	pyenv_status=${pyenv_status}
+
+	local pyenv_prompt
+	pyenv_prompt+="%B%F{025}"
+	# pyenv_prompt+="%{$fg_bold[blue]%}"
+	pyenv_prompt+="${PURE_PYENV_SYMBOL:-ƤƳ} ${pyenv_status}"
+	pyenv_prompt+="%f%b"
+
+	[[ -n $pyenv_prompt ]] && prompt_pure_pyenv_status=" ${pyenv_prompt}"
+}
+
+# JENV
+# Show current version of java, exception system.
+# Adapted from nvm status check above
+prompt_pure_check_jenv_status() {
+	[[ $PURE_JENV_SHOW == false ]] && return
+
+	$(type jenv >/dev/null 2>&1) || return
+
+	# reset jenv status prompt
+	prompt_pure_jenv_status=
+
+	local jenv_status=$(jenv version-name 2>/dev/null)
+	[[ "${jenv_status}" == "system" ]] && return
+	jenv_status=${jenv_status}
+
+	local jenv_prompt
+	jenv_prompt+="%{$fg_bold[red]%}"
+	jenv_prompt+="${PURE_JENV_SYMBOL:-♨} ${jenv_status}"
+	jenv_prompt+="%{$reset_color%}%b"
+
+	[[ -n $jenv_prompt ]] && prompt_pure_jenv_status=" ${jenv_prompt}"
+}
+
 prompt_pure_set_title() {
 	# emacs terminal does not support settings the title
 	(( ${+EMACS} )) && return
@@ -161,6 +208,10 @@ prompt_pure_preprompt_render() {
 	preprompt+="%F{cyan}${prompt_pure_git_arrows}%f"
 	# nvm status (current node version)
 	preprompt+="${prompt_pure_nvm_status}"
+	# pyenv status (current python version)
+	preprompt+="${prompt_pure_pyenv_status}"
+	# jenv status (current java version)
+	preprompt+="${prompt_pure_jenv_status}"
 	# username and machine if applicable
 	preprompt+=$prompt_pure_username
 	# execution time
@@ -232,6 +283,12 @@ prompt_pure_precmd() {
 
 	# check nvm status
 	prompt_pure_check_nvm_status
+
+	# check pyenv status
+	prompt_pure_check_pyenv_status
+
+	# check jenv status
+	prompt_pure_check_jenv_status
 
 	# shows the full path in the title
 	prompt_pure_set_title 'expand-prompt' '%~'
